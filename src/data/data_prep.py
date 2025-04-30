@@ -21,14 +21,14 @@ def load_data(filepath: str) -> pd.DataFrame:
 # test_df = pd.read_csv("./data/raw/test.csv")
 
 
-def fill_missing_values_with_mean(df_original):
+def fill_missing_values_with_median(df_original):
     try:
-        logging.info("filling missing values with mean...")
+        logging.info("filling missing values with median...")
         df = df_original.copy()
         for column in df.columns:
             if df[column].isna().any():
-                mean_value = df[column].mean()
-                df[column] = df[column].fillna(mean_value)
+                median_value = df[column].median()
+                df[column] = df[column].fillna(median_value)
 
         return df
 
@@ -57,17 +57,19 @@ def main():
         train_df = load_data(os.path.join(raw_datapath, "train.csv"))
         test_df = load_data(os.path.join(raw_datapath, "test.csv"))
 
-        train_processed_df = fill_missing_values_with_mean(train_df)
-        test_processed_df = fill_missing_values_with_mean(test_df)
+        train_processed_df = fill_missing_values_with_median(train_df)
+        test_processed_df = fill_missing_values_with_median(test_df)
 
         logging.info(f"creating {processed_datapath} folder")
         os.makedirs(processed_datapath, exist_ok=True)
 
         save_data(
-            train_processed_df, os.path.join(processed_datapath, "train_processed.csv")
+            train_processed_df,
+            os.path.join(processed_datapath, "train_processed_median.csv"),
         )
         save_data(
-            test_processed_df, os.path.join(processed_datapath, "test_processed.csv")
+            test_processed_df,
+            os.path.join(processed_datapath, "test_processed_median.csv"),
         )
 
     except Exception as e:
